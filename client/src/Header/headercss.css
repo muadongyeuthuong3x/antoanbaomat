@@ -1,0 +1,30 @@
+.congty {
+  text-align: center;
+  width: 45%;
+  margin-left: 25%;
+  margin-top: 6px;
+}
+.avatarheader {
+  width: 40px;
+  height: 40px;
+  padding-right: 5px;
+}
+.ttuser {
+  display: flex;
+  margin-top: 5px;
+}
+.header-css {
+  margin-bottom: 80px;
+}
+.nameuser {
+  font-size: 14px;
+  color: black;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+@media only screen and (max-width: 900px) {
+  h3.congty {
+    opacity: 0;
+    overflow: hidden;
+  }
+}

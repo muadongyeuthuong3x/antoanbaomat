@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mussic/datamodel.dart';
 import 'package:mussic/model/user_model.dart';
-import 'package:mussic/response_base/base_response.dart';
 import 'package:mussic/response_base/user.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:mussic/datamodel.dart';
 
 const String baseUrl = 'http://192.168.169.137:5000/';
 
 class ApiBase {
   var client = http.Client();
-  final LocalStorage storage = new LocalStorage('user');
+  final LocalStorage storage = LocalStorage('user');
   final String _token = '';
   // ignore: prefer_final_fields
   // Map<String, String> get _headers => {
@@ -47,6 +47,19 @@ class ApiBase {
     var url = Uri.parse(baseUrl + api);
     var playload = jsonEncode({"email": user.email, "password": user.password});
     var response = await client.post(url, headers: _header, body: playload);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      var dataRes = User.fromJson(json.decode(response.body));
+      return dataRes.token;
+    } else {
+      return;
+    }
+  }
+
+
+
+  Future<dynamic> getCategoryTwo(String api) async {
+    var url = Uri.parse(baseUrl + api);
+    var response = await client.get(url, headers: _header);
     if (response.statusCode == 200 || response.statusCode == 201) {
       var dataRes = User.fromJson(json.decode(response.body));
       return dataRes.token;

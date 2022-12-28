@@ -36,11 +36,15 @@ class _BodyLoginState extends State<BodyLogin> {
       var hash = await FlutterBcrypt.hashPw(
           password: passWordController.text,
           salt: r'$2b$06$C6UzMDM.H6dfI/f/IKxGhu');
-      var response = await apiBase.postData(
-          "user/login", UserModel(email: emailController.text, password: hash));
+      // var response = await apiBase.postData(
+      //     "user/login", UserModel(email: emailController.text, password: hash));
+
+      var response = await apiBase.postData("user/login",
+          UserModel(email: "test11@gmail.com", password: "123456"));
+      print(response);
       final LocalStorage storage = LocalStorage('user');
       await storage.setItem('token', response);
-      
+
       print(response.length);
       // ignore: use_build_context_synchronously
       if (response.length > 0) {
@@ -93,10 +97,10 @@ class _BodyLoginState extends State<BodyLogin> {
             RoundButton(
                 text: "Login",
                 onPressed: () async {
-                  await apiLogin();
-                  // Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  //   return const HomePage();
-                  // }));
+                //  await apiLogin();
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const HomePage();
+                  }));
                 }),
             SizedBox(
               height: size.height * 0.01,

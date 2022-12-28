@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:mussic/json/songs_json.dart';
 import 'package:mussic/pages/album_page.dart';
+import 'package:mussic/provider/category_provider.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:mussic/theme/colors.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,13 +19,38 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int activeMenu1 = 0;
   int activeMenu2 = 2;
+
+  // call api category one , categorytwo
+
+  @override
+  // initState
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<CategoryProvider>(context, listen: false).getAllCategory();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: getAppBars() as PreferredSizeWidget,
-      body: getBody(),
-    );
+        backgroundColor: Colors.black,
+        appBar: getAppBars() as PreferredSizeWidget,
+        body: Consumer<CategoryProvider>(
+          builder: ((context, value, child) {
+            // print("A1323213213213");
+            // print(value.lists[0].name);
+            if (value.isLoading) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final categorys = value.lists;
+
+            return getBody(categorys);
+          }),
+        ));
   }
 
   Widget getAppBars() {
@@ -44,7 +72,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getBody() {
+  Widget getBody(categorys) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,43 +81,55 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.only(left: 30, top: 20),
-              child: Row(
-                children: List.generate(song_type_1.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 25),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          activeMenu1 = index;
-                        });
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            song_type_1[index],
+              child: Column(
+                children: [
+                   const Text(
+                            "Register AppMusic",
                             style: TextStyle(
-                                fontSize: 15,
-                                color: activeMenu1 == index ? primary : grey,
-                                fontWeight: FontWeight.w600),
+                                fontSize: 20,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
-                          const SizedBox(
-                            height: 3,
+                  Row(
+                    
+                    children: List.generate(song_type_1.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              activeMenu1 = index;
+                            });
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                song_type_1[index],
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: activeMenu1 == index ? primary : grey,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              activeMenu1 == index
+                                  ? Container(
+                                      width: 10,
+                                      height: 3,
+                                      decoration: BoxDecoration(
+                                          color: primary,
+                                          borderRadius: BorderRadius.circular(5)),
+                                    )
+                                  : Container()
+                            ],
                           ),
-                          activeMenu1 == index
-                              ? Container(
-                                  width: 10,
-                                  height: 3,
-                                  decoration: BoxDecoration(
-                                      color: primary,
-                                      borderRadius: BorderRadius.circular(5)),
-                                )
-                              : Container()
-                        ],
-                      ),
-                    ),
-                  );
-                }),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
               ),
             ),
           ),
@@ -226,7 +266,7 @@ class _HomePageState extends State<HomePage> {
                             PageTransition(
                               alignment: Alignment.bottomCenter,
                               child: AlbumPage(
-                                song: songs[index+5],
+                                song: songs[index + 5],
                               ),
                               type: PageTransitionType.fade,
                             ));
